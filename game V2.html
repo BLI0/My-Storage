@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>India Map Game</title>
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: Arial, sans-serif;
+}
+
+body{
+    background:#ececec;
+    text-align:center;
+}
+
+.header{
+    background:linear-gradient(90deg,#1e88e5,#42a5f5);
+    color:white;
+    padding:15px;
+    font-size:32px;
+    font-weight:bold;
+}
+
+.scoreBox{
+    background:white;
+    width:330px;
+    margin:15px auto;
+    padding:15px;
+    border-radius:20px;
+    border:3px solid #333;
+    font-size:42px;
+    font-weight:bold;
+}
+
+#target{
+    color:#ff4da6;
+}
+
+.info{
+    font-size:22px;
+    font-weight:bold;
+    margin:10px;
+}
+
+.mapBox{
+    position:relative;
+    width:95%;
+    max-width:800px;
+    margin:auto;
+}
+
+.mapBox img{
+    width:100%;
+    display:block;
+}
+
+/* পয়েন্ট-ভিত্তিক টাচ এরিয়া */
+.state {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    background: rgba(255, 0, 0, 0.6); /* হালকা লাল রঙের পয়েন্ট */
+    border: 2px solid #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 8px rgba(0,0,0,0.5);
+    transition: transform 0.2s;
+}
+
+.state:hover {
+    transform: translate(-50%, -50%) scale(1.2);
+}
+
+.label{
+    position:absolute;
+    background:rgba(0,255,0,0.9);
+    color:black;
+    padding:8px 14px;
+    border-radius:12px;
+    font-size:20px;
+    font-weight:bold;
+    transform:translate(-50%, -130%);
+    animation:pop .3s;
+    pointer-events:none;
+    white-space: nowrap;
+    z-index: 10;
+}
+
+@keyframes pop{
+    0%{ transform:translate(-50%, -130%) scale(0); }
+    100%{ transform:translate(-50%, -130%) scale(1); }
+}
+
+#msg{
+    margin-top:15px;
+    font-size:24px;
+    font-weight:bold;
+    min-height:35px;
+}
+
+button{
+    margin-top:15px;
+    padding:12px 25px;
+    font-size:20px;
+    border:none;
+    border-radius:10px;
+    background:#2196f3;
+    color:white;
+    cursor:pointer;
+    font-weight: bold;
+}
+button:hover{
+    background:#1976d2;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+Madhyamik Bondhu
+</div>
+
+<div class="scoreBox">
+<span id="target">গুজরাট</span>
+&nbsp;
+<span id="score">00</span>
+</div>
+
+<div class="info">
+সঠিক পয়েন্টে টাচ করো
+</div>
+
+<div class="mapBox">
+    <img src="https://bli0.github.io/My-Storage/Indian%20Map%20Game.png" alt="India Blank Map">
+
+    <div class="state" data-name="পাঞ্জাব" style="left: 31%; top: 18.5%;"></div>
+    <div class="state" data-name="রাজস্থান" style="left: 26.5%; top: 36%;"></div>
+    <div class="state" data-name="গুজরাট" style="left: 17%; top: 50%;"></div>
+    <div class="state" data-name="মধ্যপ্রদেশ" style="left: 42%; top: 46.5%;"></div>
+    <div class="state" data-name="উত্তরপ্রদেশ" style="left: 50%; top: 34%;"></div>
+    <div class="state" data-name="বিহার" style="left: 65%; top: 37%;"></div>
+    <div class="state" data-name="পশ্চিমবঙ্গ" style="left: 69%; top: 49%;"></div>
+    <div class="state" data-name="অসম" style="left: 86%; top: 35%;"></div>
+    <div class="state" data-name="ওড়িশা" style="left: 59%; top: 56%;"></div>
+    <div class="state" data-name="মহারাষ্ট্র" style="left: 33%; top: 58%;"></div>
+    <div class="state" data-name="তেলেঙ্গানা" style="left: 46.5%; top: 65%;"></div>
+    <div class="state" data-name="কর্নাটক" style="left: 34.5%; top: 76%;"></div>
+    <div class="state" data-name="কেরালা" style="left: 34.5%; top: 89%;"></div>
+    <div class="state" data-name="তামিলনাড়ু" style="left: 43.5%; top: 88%;"></div>
+</div>
+
+<div id="msg"></div>
+
+<button onclick="restartGame()">
+Restart
+</button>
+
+<script>
+// টাস্কের তালিকা এলোমেলো বা ক্রমানুসারে সাজানো
+const tasks = [
+    { name:"গুজরাট", x: 17, y: 50 },
+    { name:"রাজস্থান", x: 26.5, y: 31 },
+    { name:"পাঞ্জাব", x: 31, y: 18.5 },
+    { name:"উত্তরপ্রদেশ", x: 50, y: 34 },
+    { name:"বিহার", x: 65, y: 37 },
+    { name:"পশ্চিমবঙ্গ", x: 69, y: 49 },
+    { name:"মহারাষ্ট্র", x: 33, y: 58 },
+    { name:"মধ্যপ্রদেশ", x: 42, y: 46.5 },
+    { name:"ওড়িশা", x: 59, y: 56 },
+    { name:"তেলেঙ্গানা", x: 46.5, y: 65 },
+    { name:"কর্নাটক", x: 34.5, y: 76 },
+    { name:"তামিলনাড়ু", x: 43.5, y: 88 },
+    { name:"কেরালা", x: 34.5, y: 89 },
+    { name:"অসম", x: 86, y: 35 }
+];
+
+let current = 0;
+let score = 0;
+
+const target = document.getElementById("target");
+const scoreText = document.getElementById("score");
+const msg = document.getElementById("msg");
+
+// প্রথম টাস্ক সেট করা
+target.innerText = tasks[current].name;
+
+document.querySelectorAll(".state").forEach(state => {
+    state.onclick = function() {
+        const clicked = state.dataset.name;
+        const correct = tasks[current];
+
+        if(clicked === correct.name) {
+            score++;
+            scoreText.innerText = String(score).padStart(2, "0");
+            msg.innerHTML = "<span style='color: green;'>✅ সঠিক হয়েছে!</span>";
+            
+            // সঠিক উত্তরের পর পয়েন্টের উপরেই লেবেল দেখাবে
+            showLabel(correct.name, correct.x, correct.y);
+            
+            // সঠিক হওয়া পয়েন্টটি সাময়িকভাবে হাইড বা গ্রিন করে দেওয়া যেতে পারে
+            state.style.background = "rgba(0, 255, 0, 0.8)";
+
+            current++;
+
+            if(current >= tasks.length) {
+                setTimeout(() => {
+                    target.innerText = "শেষ";
+                    msg.innerHTML = "🎉 সবগুলো সঠিক হয়েছে! চমৎকার!";
+                }, 1500);
+            } else {
+                setTimeout(() => {
+                    target.innerText = tasks[current].name;
+                    msg.innerHTML = "";
+                }, 1500);
+            }
+        } else {
+            msg.innerHTML = "<span style='color: red;'>❌ ভুল হয়েছে! আবার চেষ্টা করো।</span>";
+        }
+    };
+});
+
+function showLabel(name, x, y) {
+    const label = document.createElement("div");
+    label.className = "label";
+    label.innerText = name;
+    label.style.left = x + "%";
+    label.style.top = y + "%";
+    document.querySelector(".mapBox").appendChild(label);
+
+    setTimeout(() => {
+        label.remove();
+    }, 1500);
+}
+
+function restartGame() {
+    current = 0;
+    score = 0;
+    scoreText.innerText = "00";
+    target.innerText = tasks[0].name;
+    msg.innerHTML = "";
+    
+    document.querySelectorAll(".label").forEach(label => label.remove());
+    document.querySelectorAll(".state").forEach(state => {
+        state.style.background = "rgba(255, 0, 0, 0.6)"; // সব পয়েন্ট আবার লাল করা
+    });
+}
+</script>
+
+</body>
+</html>
