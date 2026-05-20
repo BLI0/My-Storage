@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>India Map Game</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial;
+}
+
+body{
+background:#ececec;
+text-align:center;
+}
+
+.header{
+background:linear-gradient(90deg,#1e88e5,#42a5f5);
+color:white;
+padding:15px;
+font-size:32px;
+font-weight:bold;
+}
+
+.scoreBox{
+background:white;
+width:330px;
+margin:15px auto;
+padding:15px;
+border-radius:20px;
+border:3px solid #333;
+font-size:42px;
+font-weight:bold;
+}
+
+#target{
+color:#ff4da6;
+}
+
+.info{
+font-size:22px;
+font-weight:bold;
+margin:10px;
+}
+
+.mapBox{
+position:relative;
+width:95%;
+max-width:850px;
+margin:auto;
+}
+
+.mapBox img{
+width:100%;
+display:block;
+}
+
+.state{
+position:absolute;
+cursor:pointer;
+}
+
+.label{
+position:absolute;
+background:rgba(0,255,0,0.85);
+color:black;
+padding:8px 14px;
+border-radius:12px;
+font-size:20px;
+font-weight:bold;
+transform:translate(-50%,-50%);
+animation:pop .3s;
+pointer-events:none;
+}
+
+@keyframes pop{
+0%{
+scale:0;
+}
+100%{
+scale:1;
+}
+}
+
+#msg{
+margin-top:15px;
+font-size:24px;
+font-weight:bold;
+min-height:35px;
+}
+
+button{
+margin-top:15px;
+padding:12px 25px;
+font-size:20px;
+border:none;
+border-radius:10px;
+background:#2196f3;
+color:white;
+cursor:pointer;
+}
+
+</style>
+</head>
+<body>
+
+<div class="header">
+Madhyamik Bondhu
+</div>
+
+<div class="scoreBox">
+<span id="target">গুজরাট</span>
+&nbsp;
+<span id="score">00</span>
+</div>
+
+<div class="info">
+সঠিক রাজ্যে টাচ করো
+</div>
+
+<div class="mapBox">
+
+<img src="https://bli0.github.io/My-Storage/Indian%20Map%20Game.png">
+
+<!-- GUJARAT -->
+<div class="state"
+data-name="গুজরাট"
+style="
+left:1%;
+top:31%;
+width:24%;
+height:22%;
+">
+</div>
+
+<!-- RAJASTHAN -->
+<div class="state"
+data-name="রাজস্থান"
+style="
+left:18%;
+top:18%;
+width:24%;
+height:22%;
+">
+</div>
+
+<!-- PUNJAB -->
+<div class="state"
+data-name="পাঞ্জাব"
+style="
+left:30%;
+top:10%;
+width:12%;
+height:10%;
+">
+</div>
+
+<!-- UTTAR PRADESH -->
+<div class="state"
+data-name="উত্তরপ্রদেশ"
+style="
+left:38%;
+top:27%;
+width:28%;
+height:16%;
+">
+</div>
+
+<!-- BIHAR -->
+<div class="state"
+data-name="বিহার"
+style="
+left:58%;
+top:31%;
+width:14%;
+height:12%;
+">
+</div>
+
+<!-- WEST BENGAL -->
+<div class="state"
+data-name="পশ্চিমবঙ্গ"
+style="
+left:61%;
+top:42%;
+width:11%;
+height:18%;
+">
+</div>
+
+<!-- MAHARASHTRA -->
+<div class="state"
+data-name="মহারাষ্ট্র"
+style="
+left:20%;
+top:45%;
+width:28%;
+height:22%;
+">
+</div>
+
+<!-- MADHYA PRADESH -->
+<div class="state"
+data-name="মধ্যপ্রদেশ"
+style="
+left:31%;
+top:35%;
+width:24%;
+height:18%;
+">
+</div>
+
+<!-- ODISHA -->
+<div class="state"
+data-name="ওড়িশা"
+style="
+left:50%;
+top:51%;
+width:14%;
+height:16%;
+">
+</div>
+
+<!-- TELENGANA -->
+<div class="state"
+data-name="তেলেঙ্গানা"
+style="
+left:40%;
+top:58%;
+width:14%;
+height:12%;
+">
+</div>
+
+<!-- KARNATAKA -->
+<div class="state"
+data-name="কর্নাটক"
+style="
+left:22%;
+top:63%;
+width:22%;
+height:24%;
+">
+</div>
+
+<!-- TAMIL NADU -->
+<div class="state"
+data-name="তামিলনাড়ু"
+style="
+left:33%;
+top:83%;
+width:18%;
+height:16%;
+">
+</div>
+
+<!-- KERALA -->
+<div class="state"
+data-name="কেরালা"
+style="
+left:24%;
+top:80%;
+width:8%;
+height:18%;
+">
+</div>
+
+<!-- ASSAM -->
+<div class="state"
+data-name="অসম"
+style="
+left:74%;
+top:30%;
+width:18%;
+height:12%;
+">
+</div>
+
+</div>
+
+<div id="msg"></div>
+
+<button onclick="restartGame()">
+Restart
+</button>
+
+<script>
+
+const tasks = [
+
+{
+name:"গুজরাট",
+x:14,
+y:42
+},
+
+{
+name:"রাজস্থান",
+x:28,
+y:28
+},
+
+{
+name:"পাঞ্জাব",
+x:35,
+y:15
+},
+
+{
+name:"উত্তরপ্রদেশ",
+x:50,
+y:35
+},
+
+{
+name:"বিহার",
+x:63,
+y:36
+},
+
+{
+name:"পশ্চিমবঙ্গ",
+x:66,
+y:49
+},
+
+{
+name:"মহারাষ্ট্র",
+x:33,
+y:56
+},
+
+{
+name:"মধ্যপ্রদেশ",
+x:43,
+y:44
+},
+
+{
+name:"ওড়িশা",
+x:57,
+y:57
+},
+
+{
+name:"তেলেঙ্গানা",
+x:46,
+y:64
+},
+
+{
+name:"কর্নাটক",
+x:33,
+y:74
+},
+
+{
+name:"তামিলনাড়ু",
+x:42,
+y:90
+},
+
+{
+name:"কেরালা",
+x:27,
+y:86
+},
+
+{
+name:"অসম",
+x:81,
+y:34
+}
+
+];
+
+let current = 0;
+let score = 0;
+
+const target =
+document.getElementById("target");
+
+const scoreText =
+document.getElementById("score");
+
+const msg =
+document.getElementById("msg");
+
+target.innerText =
+tasks[current].name;
+
+document
+.querySelectorAll(".state")
+.forEach(state=>{
+
+state.onclick = function(){
+
+const clicked =
+state.dataset.name;
+
+const correct =
+tasks[current];
+
+if(clicked === correct.name){
+
+score++;
+
+scoreText.innerText =
+String(score).padStart(2,"0");
+
+msg.innerHTML =
+"✅ সঠিক হয়েছে";
+
+showLabel(
+correct.name,
+correct.x,
+correct.y
+);
+
+current++;
+
+if(current >= tasks.length){
+
+setTimeout(()=>{
+
+target.innerText =
+"শেষ";
+
+msg.innerHTML =
+"🎉 সবগুলো সঠিক হয়েছে";
+
+},2000);
+
+}else{
+
+setTimeout(()=>{
+
+target.innerText =
+tasks[current].name;
+
+msg.innerHTML = "";
+
+},2000);
+
+}
+
+}else{
+
+msg.innerHTML =
+"❌ ভুল হয়েছে";
+
+}
+
+};
+
+});
+
+function showLabel(name,x,y){
+
+const label =
+document.createElement("div");
+
+label.className = "label";
+
+label.innerText = name;
+
+label.style.left = x + "%";
+
+label.style.top = y + "%";
+
+document
+.querySelector(".mapBox")
+.appendChild(label);
+
+setTimeout(()=>{
+label.remove();
+},2000);
+
+}
+
+function restartGame(){
+
+current = 0;
+
+score = 0;
+
+scoreText.innerText = "00";
+
+target.innerText =
+tasks[0].name;
+
+msg.innerHTML = "";
+
+document
+.querySelectorAll(".label")
+.forEach(label=>{
+label.remove();
+});
+
+}
+
+</script>
+
+</body>
+</html>
